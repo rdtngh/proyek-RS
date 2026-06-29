@@ -63,11 +63,18 @@ function renderDashboard() {
   dashboardList.innerHTML = trainings.map((training) => {
     const trainingProgress = progress[training.id] || { completedModules: [] };
     const completedModules = trainingProgress.completedModules?.length || 0;
-    const percent = Math.round((completedModules / training.modules.length) * 100);
-    const isDone = completedModules === training.modules.length;
-    if (isDone) {
-      saveTrainingProgress({ ...progress, [training.id]: { completedModules: training.modules.map((module) => module.id), completed: true } });
+    const quizScore = trainingProgress.quizScore || null;
+    const isDone = trainingProgress.completed === true;
+    
+    // Hitung percent berdasarkan quizScore jika ada, jika tidak dari modul
+    let percent;
+    if (quizScore !== null) {
+      percent = quizScore;
+    } else {
+      percent = Math.round((completedModules / training.modules.length) * 100);
     }
+    
+    console.log(`Training: ${training.id}`, { isDone, quizScore, percent, completed: trainingProgress.completed });
 
     return `
       <article class="training-card">
@@ -75,10 +82,11 @@ function renderDashboard() {
           <h3>${training.title}</h3>
           <p>${training.description}</p>
           <div class="training-status">${isDone ? '✓ Selesai' : '● ' + training.status}</div>
+          ${quizScore !== null ? `<div style="margin-top: 8px; font-size: 0.9rem; color: #2563eb; font-weight: 600;">Nilai: ${quizScore}%</div>` : ''}
         </div>
         <div class="progress-block">
           <div class="progress-bar"><div class="progress-fill" style="width:${percent}%;"></div></div>
-          <small>${completedModules}/${training.modules.length} modul terbuka</small>
+          <small>${quizScore !== null ? `Nilai penilaian: ${quizScore}%` : `${completedModules}/${training.modules.length} modul terbuka`}</small>
           <a class="btn btn-primary" href="materi.html?training=${training.id}">Mulai</a>
         </div>
       </article>
@@ -124,11 +132,29 @@ function renderMateri() {
   const params = new URLSearchParams(window.location.search);
   const trainingId = params.get('training') || 'orientation';
   const training = HETSData.trainings.find((item) => item.id === trainingId) || HETSData.trainings[0];
-  const progress = getTrainingProgress();
-  const savedState = progress[training.id] || { completedModules: [] };
+  
+  // Ambil progress SEGAR dari localStorage setiap kali dipanggil
+  const progressRaw = localStorage.getItem('hets-progress');
+  const progress = progressRaw ? JSON.parse(progressRaw) : {};
+  
+  console.log('🔄 localStorage saat ini:', progress);
+  
+  const savedState = progress[trainingId] || { completedModules: [] };
   const completedModules = savedState.completedModules || [];
+  const quizScore = savedState.quizScore;
+  const quizPassed = savedState.quizPassed;
+  const quizResult = savedState.quizResult || null;
   const totalModules = training.modules.length;
-  const percent = Math.round((completedModules.length / totalModules) * 100);
+  
+  console.log('📊 State untuk training:', { trainingId, quizScore, quizPassed, quizResult });
+  
+  // Hitung percent berdasarkan quiz score jika sudah ada, jika tidak maka berdasarkan modul
+  let percent;
+  if (typeof quizScore === 'number') {
+    percent = quizScore;
+  } else {
+    percent = Math.round((completedModules.length / totalModules) * 100);
+  }
 
   const title = document.querySelector('[data-training-title]');
   const description = document.querySelector('[data-training-description]');
@@ -141,6 +167,8 @@ function renderMateri() {
   if (description) description.textContent = training.description;
   if (progressText) progressText.textContent = `${percent}%`;
   if (progressFill) progressFill.style.width = `${percent}%`;
+  
+  console.log('Materi rendered:', { trainingId, quizScore, percent, quizResultExists: !!quizResult });
 
   if (moduleList) {
     moduleList.innerHTML = training.modules.map((module) => {
@@ -157,11 +185,43 @@ function renderMateri() {
         </article>
       `;
     }).join('');
+    
+    // Tampilkan hasil quiz jika sudah ada
+    if (quizResult) {
+      const quizResultHTML = `
+        <div style="margin-top: 20px; padding: 16px; background: ${quizResult.passed ? '#f0fdf4' : '#fef2f2'}; border-radius: 12px; border-left: 4px solid ${quizResult.passed ? '#22c55e' : '#ef4444'};">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong>Hasil Penilaian: ${quizResult.passed ? '✓ Lulus' : '✕ Tidak Lulus'}</strong>
+            <span style="font-size: 1.2rem; font-weight: bold; color: ${quizResult.passed ? '#22c55e' : '#ef4444'};">${quizResult.score}%</span>
+          </div>
+          <small style="color: #666;">Benar: ${quizResult.correct} • Salah: ${quizResult.wrong}</small>
+        </div>
+      `;
+      moduleList.insertAdjacentHTML('afterend', quizResultHTML);
+    }
   }
 
   if (quizButton) {
-    quizButton.style.display = completedModules.length === totalModules ? 'inline-flex' : 'none';
+    const allModulesOpened = completedModules.length === totalModules;
+    const alreadyHasQuizResult = typeof quizScore === 'number';
+    
+    console.log('🎯 Quiz button logic:', { allModulesOpened, alreadyHasQuizResult, quizScore, typeof: typeof quizScore });
+    
+    // Tampilkan tombol jika: semua modul dibuka ATAU sudah pernah quiz (untuk ulangi)
+    quizButton.style.display = (allModulesOpened || alreadyHasQuizResult) ? 'inline-flex' : 'none';
+    
+    // Ubah teks tombol jika sudah pernah quiz
+    if (alreadyHasQuizResult) {
+      quizButton.textContent = 'Ulangi Quiz';
+      quizButton.className = 'btn btn-secondary';
+    } else {
+      quizButton.textContent = 'Mulai Quiz';
+      quizButton.className = 'btn btn-primary';
+    }
+    
     quizButton.href = `quiz.html?training=${training.id}`;
+    
+    console.log('✅ Quiz button set to:', quizButton.textContent);
   }
 
   document.querySelectorAll('[data-open-module]').forEach((button) => {
@@ -171,7 +231,10 @@ function renderMateri() {
         ...progress,
         [training.id]: {
           completedModules: Array.from(new Set([...completedModules, moduleId])),
-          completed: false
+          completed: savedState.completed || false,
+          quizScore: savedState.quizScore,
+          quizPassed: savedState.quizPassed,
+          quizResult: savedState.quizResult
         }
       };
       saveTrainingProgress(nextState);

@@ -8,6 +8,10 @@ const questionContent = document.getElementById('question-content');
 const prevBtn = document.getElementById('prev-btn');
 const nextBtn = document.getElementById('next-btn');
 
+// Ambil training ID dari URL
+const params = new URLSearchParams(window.location.search);
+const trainingId = params.get('training') || 'orientation';
+
 let currentQuestionIndex = 0;
 const selectedAnswers = new Array(questions.length).fill(null);
 
@@ -57,8 +61,46 @@ function calculateResult() {
   return { correct, wrong: questions.length - correct, score, passed };
 }
 
+function saveTrainingCompletion() {
+  // Ambil progress yang sudah ada
+  const saved = localStorage.getItem('hets-progress');
+  const progress = saved ? JSON.parse(saved) : {};
+  
+  const result = calculateResult();
+  
+  // PENTING: Pastikan completedModules tetap ada saat simpan quiz score
+  const existingData = progress[trainingId] || {};
+  
+  // Update progress pelatihan dengan hasil quiz
+  progress[trainingId] = {
+    completedModules: existingData.completedModules || [],
+    completed: result.passed,
+    quizScore: result.score,
+    quizPassed: result.passed,
+    quizResult: {
+      score: result.score,
+      passed: result.passed,
+      correct: result.correct,
+      wrong: result.wrong,
+      timestamp: new Date().toISOString()
+    }
+  };
+  
+  // Simpan kembali ke localStorage
+  localStorage.setItem('hets-progress', JSON.stringify(progress));
+  
+  console.log('✓ Progress tersimpan lengkap:', progress);
+  console.log('✓ Training ID:', trainingId);
+  console.log('✓ Quiz Score:', result.score);
+  console.log('✓ localStorage check:', localStorage.getItem('hets-progress'));
+}
+
 function showResult() {
   const result = calculateResult();
+  
+  // Simpan hasil quiz ke localStorage
+  saveTrainingCompletion();
+  
   const resultMarkup = `
     <div class="result-card">
       <div class="result-icon ${result.passed ? 'pass' : 'fail'}">${result.passed ? '🏆' : '✕'}</div>
@@ -72,8 +114,8 @@ function showResult() {
         <div class="result-row"><strong>Persentase</strong><span>${result.score}%</span></div>
       </div>
       <div class="quiz-actions">
-        <a class="btn btn-secondary" href="quiz.html">Ulangi Quiz</a>
-        <a class="btn btn-primary" href="dashboard.html">Kembali Dashboard</a>
+        <a class="btn btn-secondary" href="quiz.html?training=${trainingId}">Ulangi Quiz</a>
+        <a class="btn btn-primary" href="materi.html?training=${trainingId}">Selesai</a>
       </div>
     </div>
   `;
