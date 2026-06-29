@@ -1,0 +1,127 @@
+.quiz-layout {
+  padding: 32px 0 48px;
+}
+
+.quiz-shell {
+  width: min(820px, calc(100% - 24px));
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+}
+
+.quiz-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.question-card {
+  padding: 24px;
+}
+
+.question-title {
+  font-size: 1.1rem;
+  margin: 0 0 16px;
+}
+
+.option-list {
+  display: grid;
+  gap: 12px;
+}
+
+.option-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: #fcfdff;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.option-item:hover {
+  transform: translateY(-1px);
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.option-item input {
+  accent-color: var(--primary);
+}
+
+.quiz-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.result-card {
+  padding: 28px;
+}
+
+.result-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  font-size: 1.7rem;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.result-icon.pass {
+  background: var(--success);
+}
+
+.result-icon.fail {
+  background: var(--danger);
+}
+
+.result-grid {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0 24px;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--surface-alt);
+}
+
+.status-pill {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-pill.pass {
+  background: rgba(9, 146, 104, 0.12);
+  color: var(--success);
+}
+
+.status-pill.fail {
+  background: rgba(224, 49, 49, 0.12);
+  color: var(--danger);
+}
+
+@media (max-width: 640px) {
+  .quiz-actions {
+    flex-direction: column-reverse;
+  }
+
+  .quiz-actions .btn {
+    width: 100%;
+  }
+}
