@@ -1,6 +1,7 @@
 // Aplikasi prototype HETS untuk halaman landing, login, dashboard, dan materi.
 const storageKeys = {
   user: 'hets-user',
+  userData: 'hets-user-data',
   progress: 'hets-progress',
   result: 'hets-latest-result'
 };
@@ -9,8 +10,18 @@ function getSavedUser() {
   return localStorage.getItem(storageKeys.user) || '';
 }
 
+function getSavedUserData() {
+  const saved = localStorage.getItem(storageKeys.userData);
+  return saved ? JSON.parse(saved) : null;
+}
+
 function saveUser(username) {
   localStorage.setItem(storageKeys.user, username);
+}
+
+function saveUserData(userData) {
+  localStorage.setItem(storageKeys.user, userData.name);
+  localStorage.setItem(storageKeys.userData, JSON.stringify(userData));
 }
 
 function getTrainingProgress() {
@@ -81,15 +92,30 @@ function attachLoginForm() {
 
   form.addEventListener('submit', (event) => {
     event.preventDefault();
-    const username = form.querySelector('[name="username"]').value.trim();
-    const password = form.querySelector('[name="password"]').value;
+    
+    const unit = form.querySelector('[name="unit"]').value.trim();
+    const name = form.querySelector('[name="name"]').value.trim();
+    const school = form.querySelector('[name="school"]').value.trim();
+    const phone = form.querySelector('[name="phone"]').value.trim();
+    const address = form.querySelector('[name="address"]').value.trim();
+    const position = form.querySelector('[name="position"]').value.trim();
 
-    if (!username || !password) {
-      alert('Isi username dan password untuk melanjutkan.');
+    if (!unit || !name || !school || !phone || !address || !position) {
+      alert('Semua data wajib diisi untuk melanjutkan.');
       return;
     }
 
-    saveUser(username);
+    const userData = {
+      unit,
+      name,
+      school,
+      phone,
+      address,
+      position,
+      timestamp: new Date().toISOString()
+    };
+
+    saveUserData(userData);
     window.location.href = 'dashboard.html';
   });
 }

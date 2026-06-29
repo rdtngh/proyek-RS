@@ -18,7 +18,7 @@ function updateProgress() {
   progressText.textContent = `${Math.round(percent)}%`;
   questionCounter.textContent = `Soal ${currentQuestionIndex + 1} dari ${questions.length}`;
   prevBtn.disabled = currentQuestionIndex === 0;
-  nextBtn.textContent = currentQuestionIndex === questions.length - 1 ? 'Selesai' : 'Next';
+  nextBtn.textContent = currentQuestionIndex === questions.length - 1 ? 'Selesai' : 'Berikutnya';
 }
 
 function renderQuestion() {

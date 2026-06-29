@@ -13,8 +13,8 @@
           <a class="brand" href="index.html">
             <div class="brand-mark">RS</div>
             <div class="brand-copy">
-              <h1>Hospital Employee Training System</h1>
-              <p>RS Advent Bandar Lampung</p>
+              <h1>RS Advent Bandar Lampung</h1>
+              <p>Sistem Pelatihan Karyawan Rumah Sakit</p>
             </div>
           </a>
         </div>
@@ -22,20 +22,43 @@
 
       <main class="auth-shell">
         <section class="auth-card">
-          <h2>Masuk ke akun Anda</h2>
-          <p>Gunakan akun demo untuk melihat alur pelatihan.</p>
+          <h2>Data Diri Peserta</h2>
+          <p>Semua bagian wajib diisi sebelum Anda dapat melanjutkan ke sesi pertanyaan.</p>
           <form data-login-form>
             <div class="form-group">
-              <label for="username">Username</label>
-              <input id="username" name="username" type="text" placeholder="cth. employee01" />
+              <label for="unit">Unit Anda Bekerja / Unit Praktek</label>
+              <input id="unit" name="unit" type="text" placeholder="Contoh: IGD" required />
             </div>
             <div class="form-group">
-              <label for="password">Password</label>
-              <input id="password" name="password" type="password" placeholder="Masukkan password" />
+              <label for="name">Nama</label>
+              <input id="name" name="name" type="text" placeholder="Masukkan Nama Lengkap Anda" required />
+            </div>
+            <div class="form-group">
+              <label for="school">Asal Sekolah / Kampus / Universitas</label>
+              <input id="school" name="school" type="text" placeholder="Contoh: Institut Teknologi Sumatera" required />
+            </div>
+            <div class="form-group">
+              <label for="phone">No HP yang bisa dihubungi</label>
+              <input id="phone" name="phone" type="tel" placeholder="Contoh: 08123456789" required />
+            </div>
+            <div class="form-group">
+              <label for="address">Domisili / Alamat Tempat Tinggal Sekarang</label>
+              <input id="address" name="address" placeholder="Tuliskan Alamat Lengkap Anda" required />
+            </div>
+            <div class="form-group">
+              <label for="position">Saat ini saya sebagai ........ di Rumah Sakit Advent Bandar Lampung</label>
+              <select id="position" name="position" required>
+                <option value="">Pilih Status</option>
+                <option value="mahasiswa-pkl">Mahasiswa PKL</option>
+                <option value="calon-karyawan">Calon Karyawan</option>
+                <option value="dokter-internship">Dokter Internship</option>
+                <option value="trainee">Trainee (Magang)</option>
+                <option value="mahasiswa-internship">Mahasiswa Internship</option>
+              </select>
             </div>
             <div class="form-actions">
               <a class="muted-link" href="index.html">Kembali ke beranda</a>
-              <button class="btn btn-primary" type="submit">Login</button>
+              <button class="btn btn-primary" type="submit">Selanjutnya</button>
             </div>
           </form>
         </section>
@@ -44,7 +67,7 @@
       <footer class="footer">
         <div class="footer-inner">
           <span>© 2026 RS Advent Bandar Lampung</span>
-          <span>Prototype HETS</span>
+          <span>Pelatihan Karyawan</span>
         </div>
       </footer>
     </div>
