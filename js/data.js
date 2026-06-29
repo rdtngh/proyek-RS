@@ -3,7 +3,7 @@ const HETSData = {
   trainings: [
     {
       id: 'orientation',
-      title: 'Orientasi Rumah Sakit',
+      title: 'Budaya Rumah Sakit',
       description: 'Pengenalan budaya kerja, struktur unit, dan alur layanan pasien.',
       status: 'Selesai',
       modules: [

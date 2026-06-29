@@ -1,4 +1,3 @@
-// Logika quiz interaktif untuk prototype HETS.
 const PASSING_SCORE = 75;
 const questions = HETSData.quizQuestions;
 
